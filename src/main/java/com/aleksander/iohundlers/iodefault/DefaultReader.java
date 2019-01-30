@@ -8,7 +8,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
-public class DefaultReader implements Reader {
+public class DefaultReader implements Reader, AutoCloseable {
 
     private BufferedReader bufferedReader;
 

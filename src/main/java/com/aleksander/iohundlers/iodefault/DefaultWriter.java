@@ -7,7 +7,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 
-public class DefaultWriter implements Writer {
+public class DefaultWriter implements Writer, AutoCloseable {
 
     private BufferedWriter bufferedWriter;
 
@@ -23,6 +23,15 @@ public class DefaultWriter implements Writer {
     public void write(char smb) throws DefaultIOException {
         try {
             bufferedWriter.write(smb);
+        } catch (IOException e) {
+            throw new DefaultIOException(e.getMessage());
+        }
+    }
+
+    @Override
+    public void write(String string) throws DefaultIOException {
+        try {
+            bufferedWriter.write(string);
         } catch (IOException e) {
             throw new DefaultIOException(e.getMessage());
         }
