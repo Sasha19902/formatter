@@ -10,4 +10,9 @@ public class SimpleFormatterStateTransfer implements StateTransfer {
     public FormatterState nextState(Token token, FormatterState currentState) {
         return null;
     }
+
+    @Override
+    public FormatterState startedFormatterState() {
+        return null;
+    }
 }

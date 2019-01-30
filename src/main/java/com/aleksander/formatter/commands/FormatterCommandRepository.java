@@ -1,4 +1,4 @@
 package com.aleksander.formatter.commands;
 
-public class CommandRepository {
+public class FormatterCommandRepository {
 }

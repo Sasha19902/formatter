@@ -26,7 +26,7 @@ public class SimpleFormatter implements Formatter {
         StateTransfer stateTransfer = stateTransferFabric.generateStateTransfer(); // = generateByFabric
         FormatterState formatterState = stateTransfer.startedFormatterState(); // = default formatter state (start state);
         FormatterCommander formatterCommander = formatterCommanderFabric.generateFormatterCommander();
-        Command command = null; //base command init
+        Command command = null; //base commands init
 
         try {
             while (lexer.hasNextToken()) {
