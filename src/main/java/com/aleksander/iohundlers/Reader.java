@@ -1,5 +1,9 @@
 package com.aleksander.iohundlers;
 
-public interface Reader {
-    char read();
+
+import com.aleksander.iohundlers.exceptions.DefaultIOException;
+
+public interface Reader extends AutoCloseable {
+    char read() throws DefaultIOException;
+    boolean ready() throws DefaultIOException;
 }

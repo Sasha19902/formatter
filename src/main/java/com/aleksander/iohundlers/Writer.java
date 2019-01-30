@@ -1,5 +1,7 @@
 package com.aleksander.iohundlers;
 
-public interface Writer {
-    void write(char smb);
+import com.aleksander.iohundlers.exceptions.DefaultIOException;
+
+public interface Writer extends AutoCloseable {
+    void write(char smb) throws DefaultIOException;
 }
