@@ -7,6 +7,11 @@ import com.aleksander.lexer.commands.tcommands.Command;
 import com.aleksander.lexer.exceptions.LexerException;
 import com.aleksander.lexer.lstate.LexerState;
 import com.aleksander.lexer.lstate.StateTransfer;
+import com.aleksander.lexer.token.Token;
+import com.aleksander.lexer.token.TokenBuilder;
+
+import java.util.ArrayDeque;
+import java.util.Queue;
 
 public class SimpleLexer implements Lexer {
 
@@ -15,18 +20,26 @@ public class SimpleLexer implements Lexer {
 
     private StateTransfer stateTransfer; // = init by fabrics
     private LexerCommander lexerCommander; // = init by fabrics
+    private ArrayDeque<Token> bufferTokens;
 
-    public SimpleLexer(Reader reader) {
+    public SimpleLexer(Reader reader, TokenBuilder tokenBuilder, StateTransfer stateTransfer, LexerCommander lexerCommander) {
+        this.tokenBuilder = tokenBuilder;
         this.reader = reader;
+        this.stateTransfer = stateTransfer;
+        this.lexerCommander = lexerCommander;
+        bufferTokens = new ArrayDeque<>();
     }
 
     @Override
     public Token nextToken() throws LexerException {
+        if(!bufferTokens.isEmpty()) {
+            return bufferTokens.poll();
+        }
         LexerState lexerState = stateTransfer.startedLexerState();
         Command command = null;
         char symbol = 0;
         try {
-            while (reader.ready()) {
+            while (reader.ready() && !tokenBuilder.formed()) {
                 symbol = reader.read();
                 lexerState = stateTransfer.nextState(symbol, lexerState);
                 command = lexerCommander.generateCommand(symbol, lexerState);
@@ -35,11 +48,18 @@ public class SimpleLexer implements Lexer {
         } catch (DefaultIOException e) {
             throw new LexerException("Inner Lexer: " + e.getMessage());
         }
-        return null;
+        bufferTokens.addAll(tokenBuilder.getTokens());
+        return bufferTokens.poll();
     }
 
     @Override
     public boolean hasNextToken() throws LexerException {
-        return false;
+        try {
+            return reader.ready();
+        } catch (DefaultIOException e) {
+            throw new LexerException(e.getMessage());
+        }
     }
+
+
 }

@@ -1,11 +1,15 @@
 package com.aleksander.lexer.fabrics;
 
-import com.aleksander.formatter.fstate.StateTransfer;
+import com.aleksander.lexer.lstate.SimpleLexerStateTransfer;
+import com.aleksander.lexer.lstate.StateRepository;
+import com.aleksander.lexer.lstate.StateTransfer;
+import com.aleksander.utils.SpecialKeys;
 
 public class StateTransferFabricImpl implements StateTransferFabric {
 
     @Override
-    public StateTransfer generateStateTransfer() {
-        return null;
+    public StateTransfer generateStateTransfer(SpecialKeys specialKeys) {
+        StateRepository stateRepository = new StateRepository(specialKeys.getKeySymbols());
+        return new SimpleLexerStateTransfer(stateRepository);
     }
 }

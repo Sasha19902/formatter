@@ -10,9 +10,8 @@ import com.aleksander.formatter.fabrics.StateTransferFabricImpl;
 import com.aleksander.formatter.fstate.FormatterState;
 import com.aleksander.formatter.fstate.StateTransfer;
 import com.aleksander.iohundlers.Writer;
-import com.aleksander.iohundlers.exceptions.DefaultIOException;
 import com.aleksander.lexer.Lexer;
-import com.aleksander.lexer.Token;
+import com.aleksander.lexer.token.Token;
 import com.aleksander.lexer.exceptions.LexerException;
 
 public class SimpleFormatter implements Formatter {
