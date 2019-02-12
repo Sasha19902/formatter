@@ -10,6 +10,8 @@ import com.aleksander.formatter.iohundlers.exceptions.DefaultIOException;
 import com.aleksander.formatter.lexer.Lexer;
 import com.aleksander.formatter.utils.Token;
 import com.aleksander.formatter.lexer.exceptions.LexerException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Deque;
 
@@ -18,6 +20,7 @@ public class SimpleFormatter implements Formatter {
     private Deque<Token> buffer;
     private StateTransfer stateTransfer;
     private FormatterCommander formatterCommander;
+    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleFormatter.class);
 
     public SimpleFormatter(StateTransfer stateTransfer, FormatterCommander formatterCommander, Deque<Token> buffer) {
         this.stateTransfer = stateTransfer;
@@ -27,13 +30,14 @@ public class SimpleFormatter implements Formatter {
 
     @Override
     public void format(Lexer lexer, Writer writer) throws FormatterException {
-
+        //comment
         FormatterState formatterState = stateTransfer.startedFormatterState(); // = default formatterhundlers state (start state);
         Command command = null; //base commands init
         int iteration = 0;
         try {
             while (lexer.hasNextToken()) {
                 Token token = lexer.nextToken();
+                LOGGER.info(String.format("TOKEN_INFO: %s", token.getType()));
                 formatterState = stateTransfer.nextState(token, formatterState);
                 command = formatterCommander.generateCommand(token, formatterState);
                 command.execute();

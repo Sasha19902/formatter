@@ -31,7 +31,7 @@ public class SimpleLexer implements Lexer {
 
     @Override
     public Token nextToken() throws LexerException {
-        if(!bufferTokens.isEmpty()) {
+        if (!bufferTokens.isEmpty()) {
             return bufferTokens.poll();
         }
         LexerState lexerState = stateTransfer.startedLexerState();

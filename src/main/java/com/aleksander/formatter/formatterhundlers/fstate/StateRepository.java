@@ -12,7 +12,8 @@ public class StateRepository {
     public enum StateIdentificator {
         DEFAULT_STATE("DEFAULT_STATE"),DEFAULT_TOKEN("DEFAULT_TOKEN"),
         LEFT_BRACKET("LEFT_BRACKET"), RIGHT_BRACKET("RIGHT_BRACKET"),
-        SEMICOLON("SEMICOLON"), WHITE_SPACE("WHITE_SPACE"), END_LINE("END_LINE");;
+        SEMICOLON("SEMICOLON"), WHITE_SPACE("WHITE_SPACE"), END_LINE("END_LINE"),
+        COMMENT_LINE(Token.TT_COMMENT);
         StateIdentificator(String name) {
             this.name = name;
         }
@@ -40,21 +41,27 @@ public class StateRepository {
         FState semicolon = new FState(StateIdentificator.SEMICOLON.name);
         FState whiteSpace = new FState(StateIdentificator.WHITE_SPACE.name);
         FState nextLine = new FState(StateIdentificator.END_LINE.name);
+        FState commentLine = new FState(StateIdentificator.COMMENT_LINE.name);
 
         states.put(StateIdentificator.LEFT_BRACKET, leftBracket);
         states.put(StateIdentificator.RIGHT_BRACKET, rightBracket);
         states.put(StateIdentificator.SEMICOLON, semicolon);
         states.put(StateIdentificator.WHITE_SPACE, whiteSpace);
         states.put(StateIdentificator.END_LINE, nextLine);
+        states.put(StateIdentificator.COMMENT_LINE, commentLine);
 
         formatterStateMap.put(tokenRepository.formTokenByInfo(leftBracket.getInfo()), leftBracket);
         formatterStateMap.put(tokenRepository.formTokenByInfo(rightBracket.getInfo()), rightBracket);
         formatterStateMap.put(tokenRepository.formTokenByInfo(semicolon.getInfo()), semicolon);
         formatterStateMap.put(tokenRepository.formTokenByInfo(whiteSpace.getInfo()), whiteSpace);
         formatterStateMap.put(tokenRepository.formTokenByInfo(nextLine.getInfo()), nextLine);
+        formatterStateMap.put(tokenRepository.formTokenByInfo(commentLine.getInfo()), commentLine);
     }
 
     public FormatterState getFormatterState(FormatterState formatterState, Token token) {
+        if(token.getContent().startsWith("//")) {
+            return states.get(StateIdentificator.COMMENT_LINE);
+        }
         return formatterStateMap.getOrDefault(token, states.get(StateIdentificator.DEFAULT_TOKEN));
     }
 

@@ -33,7 +33,14 @@ public class TokenRepository {
         }
     }
 
+
+
     public Token formToken(String content) {
+        //commentToken
+        if(content.startsWith("//")) {
+            return new LexerToken(content, Token.TT_COMMENT);
+        }
+
         return tokenMap.getOrDefault(content, new LexerToken(content, Token.TT_DEFAULT));
     }
 

@@ -22,7 +22,7 @@ public class SimpleLexerStateTransfer implements StateTransfer {
 
     @Override
     public LexerState startedLexerState() {
-        return stateRepository.getDefaultState();
+        return stateRepository.getStateByIdentificator(StateRepository.StateIdentificator.DEFAULT_STATE);
     }
 
     @Override

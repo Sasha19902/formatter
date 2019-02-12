@@ -24,14 +24,12 @@ public class FormatterCommandRepository {
         updatableCommands = new ArrayList<>();
 
         EmptyCommand emptyCommand = new EmptyCommand();
-        PreparationCommand preparationCommand = new PreparationCommand();
         WriteTokenCommand writeTokenCommand = new WriteTokenCommand(tokens);
-        TabulationCommand changeTabulationCommand = new TabulationCommand(tokens);
         NextLineCommand nextLineCommand = new NextLineCommand(tokens);
-        MakeWhiteSpaceCommand makeWhiteSpaceCommand = new MakeWhiteSpaceCommand(tokens);
+        TabulationCommand changeTabulationCommand = new TabulationCommand(tokens, nextLineCommand);
+        MakeWhiteSpaceCommand makeWhiteSpaceCommand = new MakeWhiteSpaceCommand(tokens, nextLineCommand);
 
         commands.put(CommandIdentificator.EMPTY_COMMAND, emptyCommand);
-        commands.put(CommandIdentificator.PREPARATION_COMMAND, preparationCommand);
         commands.put(CommandIdentificator.WRITE_TOKEN_COMMAND, writeTokenCommand);
         commands.put(CommandIdentificator.CHANGE_TABULATION_COMMAND, changeTabulationCommand);
         commands.put(CommandIdentificator.NEXT_LINE_COMMAND, nextLineCommand);
@@ -69,6 +67,13 @@ public class FormatterCommandRepository {
         defaultToken.add(writeTokenCommand);
         defaultToken.add(makeWhiteSpaceCommand);
         commandMap.put(stateRepository.getStateByIdentificator(StateRepository.StateIdentificator.DEFAULT_TOKEN), defaultToken);
+
+        //COMMENT_TOKEN
+        CompositeCommand commentToken = new CompositeCommand();
+        commentToken.add(writeTokenCommand);
+        commentToken.add(nextLineCommand);
+        commentToken.add(changeTabulationCommand);
+        commandMap.put(stateRepository.getStateByIdentificator(StateRepository.StateIdentificator.COMMENT_LINE), commentToken);
     }
 
     public Command getCommand(FormatterState formatterState, Token token) {

@@ -12,13 +12,11 @@ import java.util.Set;
 
 public class LexerCommandRepository {
 
-    private static final String EMPTY_COMMAND = "EMPTY_COMMAND";
-    private static final String FORMED_TOKEN_COMMAND = "FT_COMMAND";
-    private static final String PREPARATION_COMMAND = "PREPARATION_COMMAND";
-    private static final String FLUSH_COMMAND = "FLUSH_COMMAND";
-    private static final String APPEND_COMMAND = "APPEND_COMMAND";
+    public enum CommandIdentificator {
+        EMPTY_COMMAND, FORMED_TOKEN_COMMAND, PREPARATION_COMMAND, FLUSH_COMMAND, APPEND_COMMAND, END_COMMAND;
+    }
 
-    private Map<String, Command> commands;
+    private Map<CommandIdentificator, Command> commands;
     private Map<LexerState, Command> repository;
     private Set<UpdatebleCommand<String>> updatebleCommands;
 
@@ -33,26 +31,38 @@ public class LexerCommandRepository {
         preparationCommand.add(formedTokenCommand);
         preparationCommand.add(flushCommand);
         AppendElementCommand appendElementCommand = new AppendElementCommand(tokenBuilder);
+        CompositeCommand endCommand = new CompositeCommand();
+        endCommand.add(appendElementCommand);
+        endCommand.add(flushCommand);
 
 
         updatebleCommands.add(formedTokenCommand);
         updatebleCommands.add(appendElementCommand);
 
-        commands.put(EMPTY_COMMAND, new EmptyCommand());
-        commands.put(FORMED_TOKEN_COMMAND, formedTokenCommand);
-        commands.put(PREPARATION_COMMAND, preparationCommand);
-        commands.put(FLUSH_COMMAND, flushCommand);
-        commands.put(APPEND_COMMAND, appendElementCommand);
+        commands.put(CommandIdentificator.EMPTY_COMMAND, new EmptyCommand());
+        commands.put(CommandIdentificator.FORMED_TOKEN_COMMAND, formedTokenCommand);
+        commands.put(CommandIdentificator.PREPARATION_COMMAND, preparationCommand);
+        commands.put(CommandIdentificator.FLUSH_COMMAND, flushCommand);
+        commands.put(CommandIdentificator.APPEND_COMMAND, appendElementCommand);
+        commands.put(CommandIdentificator.END_COMMAND, endCommand);
 
-        repository.put(stateRepository.getDefaultState(), commands.get(EMPTY_COMMAND));
-        repository.put(stateRepository.getFlushState(), commands.get(FLUSH_COMMAND));
-        repository.put(stateRepository.getPreparationState(), commands.get(PREPARATION_COMMAND));
-        repository.put(stateRepository.getReadingState(), commands.get(APPEND_COMMAND));
+        repository.put(stateRepository.getStateByIdentificator(StateRepository.StateIdentificator.DEFAULT_STATE), commands.get(CommandIdentificator.EMPTY_COMMAND));
+        repository.put(stateRepository.getStateByIdentificator(StateRepository.StateIdentificator.FLUSH_STATE), commands.get(CommandIdentificator.FLUSH_COMMAND));
+        repository.put(stateRepository.getStateByIdentificator(StateRepository.StateIdentificator.PREPARATION_STATE), commands.get(CommandIdentificator.PREPARATION_COMMAND));
+        repository.put(stateRepository.getStateByIdentificator(StateRepository.StateIdentificator.READING_STATE), commands.get(CommandIdentificator.APPEND_COMMAND));
+        repository.put(stateRepository.getStateByIdentificator(StateRepository.StateIdentificator.STRING_LITERAL), commands.get(CommandIdentificator.APPEND_COMMAND));
+        repository.put(stateRepository.getStateByIdentificator(StateRepository.StateIdentificator.STRING_LITERAL), commands.get(CommandIdentificator.APPEND_COMMAND));
+        repository.put(stateRepository.getStateByIdentificator(StateRepository.StateIdentificator.CHAR_LITERAL), commands.get(CommandIdentificator.APPEND_COMMAND));
+        repository.put(stateRepository.getStateByIdentificator(StateRepository.StateIdentificator.COMMENT_PRE), commands.get(CommandIdentificator.APPEND_COMMAND));
+        repository.put(stateRepository.getStateByIdentificator(StateRepository.StateIdentificator.COMMENT_LINE), commands.get(CommandIdentificator.APPEND_COMMAND));
+        repository.put(stateRepository.getStateByIdentificator(StateRepository.StateIdentificator.END_COMMENT), commands.get(CommandIdentificator.FLUSH_COMMAND));
+        repository.put(stateRepository.getStateByIdentificator(StateRepository.StateIdentificator.END_STRING_LITERAL), commands.get(CommandIdentificator.END_COMMAND));
+        repository.put(stateRepository.getStateByIdentificator(StateRepository.StateIdentificator.END_CHAR_LITERAL), commands.get(CommandIdentificator.END_COMMAND));
     }
 
     public Command getCommand(String string, LexerState lexerState) {
         updatebleCommands.forEach(upd -> upd.update(string));
-        return repository.getOrDefault(lexerState, commands.get(EMPTY_COMMAND));
+        return repository.getOrDefault(lexerState, commands.get(CommandIdentificator.EMPTY_COMMAND));
     }
 
 }
